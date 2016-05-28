@@ -29,10 +29,10 @@ namespace sjtu {
 		size_t _size;
 		node *null;
 	public:
-        /*(1)class iterator {void decrease_key(const T &new_key) {}};
-        (2)iterator push(const T &key) {} (3)bool empty() {}*/
-        /*(1)void pop() {} (2)T& top() {} (3)size_t size() {}*/
-        /*(1)test (2)operator = (3)copy constructor*/
+		/*(1)class iterator {void decrease_key(const T &new_key) {}};
+		  (2)iterator push(const T &key) {} (3)bool empty() {}*/
+		/*(1)void pop() {} (2)T& top() {} (3)size_t size() {}*/
+		/*(1)test (2)operator = (3)copy constructor*/
 		void merge(rpheap &other) {
 			if (&other == this) return;
 			roots.splice(roots.end(), other.roots);
