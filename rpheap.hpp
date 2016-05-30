@@ -25,49 +25,6 @@ namespace sjtu {
 				}
 			}
 		};
-		class iterator{
-			friend rpheap;
-			private:
-				node* it;
-			public:
-				T& operator*() const {
-					return it->key;
-				}
-				void decrease_key(const T &new_key){
-					it->key = new_key;
-					if (it->parent == null){
-						if (Compare()(it->key,(*min_root)->key)){
-							for (min_root = roots.begin();(*min_root) != it;min_root ++);
-						}
-						return;
-					}
-					node *u = it->parent;
-					node *y = it->child[1];
-					it->child[1] = null;
-					it->parent = null;
-					if (u->child[1] == it) u->child[1] = y; else u->child[0] = y;
-					y->parent = u;
-					roots.push_back(it);
-					if (Compare()(it->key,(*min_root)->key)){
-						min_root = roots.end();
-						-- min_root;
-					}
-					while (1){
-						if (u->parent == null){
-							u->rank = u->child[0]->rank + 1;
-							break;
-						}
-						node *v = u->child[0];
-						node *w = u->child[1];
-						int k;
-						if (v->rank > w->rank) k = v->rank; else k = w->rank;
-						if (v->rank == w->rank) ++ k;
-						if (k >= u->rank) break;
-						u->rank = k;
-						u = u->parent;
-					}
-				}
-		};
 		std::list<node*> roots;
 		typename std::list<node*>::iterator min_root;
 		size_t _size;
@@ -88,6 +45,57 @@ namespace sjtu {
 		  (2)iterator push(const T &key) {} (3)bool empty() {}*/
 		/*(1)void pop() {} (2)T& top() {} (3)size_t size() {}*/
 		/*(1)test (2)operator = (3)copy constructor*/
+		class iterator{
+			friend rpheap;
+			private:
+				rpheap* which;
+				node* it;
+			public:
+				iterator(){
+					which = nullptr;
+					it = nullptr;
+				}
+				iterator(rpheap* _which,node* _it){
+					which = _which;
+					it = _it;
+				}
+				T& operator*() const {
+					return it->key;
+				}
+				void decrease_key(const T &new_key){
+					it->key = new_key;
+					if (it->parent == null){
+						if (Compare()(it->key,(*which->min_root)->key)){
+							for (which->min_root = (which->roots).begin();*(which->min_root) != it;which->min_root ++);
+						}
+						return;
+					}
+					node *u = it->parent;
+					node *y = it->child[1];
+					it->child[1] = null;
+					it->parent = null;
+					if (u->child[1] == it) u->child[1] = y; else u->child[0] = y;
+					y->parent = u;
+					(which->roots).push_back(it);
+					if (Compare()(it->key,(*which->min_root)->key)){
+						which->min_root = -- (which->roots).end();
+					}
+					while (1){
+						if (u->parent == null){
+							u->rank = u->child[0]->rank + 1;
+							break;
+						}
+						node *v = u->child[0];
+						node *w = u->child[1];
+						int k;
+						if (v->rank > w->rank) k = v->rank; else k = w->rank;
+						if (v->rank == w->rank) ++ k;
+						if (k >= u->rank) break;
+						u->rank = k;
+						u = u->parent;
+					}
+				}
+		};
 		void merge(rpheap &other) {
 			if (&other == this) return;
 			roots.splice(roots.end(), other.roots);
@@ -130,6 +138,8 @@ namespace sjtu {
 				min_root = roots.end();
 				-- min_root;
 			}
+			++ _size;
+			return iterator(this,now);
 		}
 		void pop() {
 			if (_size == 0) throw error();
