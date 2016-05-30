@@ -25,6 +25,49 @@ namespace sjtu {
 				}
 			}
 		};
+		class iterator{
+			friend rpheap;
+			private:
+				node* it;
+			public:
+				T& operator*() const {
+					return it->key;
+				}
+				void decrease_key(const T &new_key){
+					it->key = new_key;
+					if (it->parent == null){
+						if (Compare()(it->key,(*min_root)->key)){
+							for (min_root = roots.begin();(*min_root) != it;min_root ++);
+						}
+						return;
+					}
+					node *u = it->parent;
+					node *y = it->child[1];
+					it->child[1] = null;
+					it->parent = null;
+					if (u->child[1] == it) u->child[1] = y; else u->child[0] = y;
+					y->parent = u;
+					roots.push_back(it);
+					if (Compare()(it->key,(*min_root)->key)){
+						min_root = roots.end();
+						-- min_root;
+					}
+					while (1){
+						if (u->parent == null){
+							u->rank = u->child[0]->rank + 1;
+							break;
+						}
+						node *v = u->child[0];
+						node *w = u->child[1];
+						int k;
+						if (v->rank > w->rank) k = v->rank; else k = w->rank;
+						if (v->rank == w->rank) ++ k;
+						if (k >= u->rank) break;
+						u->rank = k;
+						u = u->parent;
+					}
+				}
+		};
 		std::list<node*> roots;
 		typename std::list<node*>::iterator min_root;
 		size_t _size;
@@ -77,6 +120,17 @@ namespace sjtu {
 		size_t size() {
 			return _size;
 		}
+		bool empty(){
+			return _size == 0;
+		}
+		iterator push(const T &key){
+			node* now = new node(key,null,null,null);
+			roots.push_back(now);
+			if (Compare()(key,(*min_root)->key)){
+				min_root = roots.end();
+				-- min_root;
+			}
+		}
 		void pop() {
 			if (_size == 0) throw error();
 			node* cur_node = (*min_root) -> child[0];
@@ -123,4 +177,3 @@ namespace sjtu {
 		}
 	};
 };
-
