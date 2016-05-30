@@ -29,8 +29,8 @@ namespace sjtu {
 		std::list<node*> roots;
 		typename std::list<node*>::iterator min_root;
 		size_t _size;
-        static node *null;
-        static int global_cnt;
+		static node *null;
+		static int global_cnt;
 		node *link(node *&a, node *&b) {
 			if (Compare()(a -> key, b -> key)) {
 				std::swap(a, b);
@@ -100,8 +100,8 @@ namespace sjtu {
 		};
 		void merge(rpheap &other) {
 			if (&other == this) return;
-            if (other.empty()) return;
-            _size += other._size;
+			if (other.empty()) return;
+			_size += other._size;
 			roots.splice(roots.end(), other.roots);
 			if (other._size && Compare()((*other.min_root) -> key, (*min_root) -> key)) min_root = other.min_root;
 			other.clear();
@@ -117,15 +117,15 @@ namespace sjtu {
 		}
 		rpheap() {
 			_size = 0;
-            global_cnt ++;
-            if (global_cnt == 1) null = new node();
+			global_cnt ++; 
+			if (global_cnt == 1) null = new node();
 			roots.clear();
 			min_root = roots.end();
 		}
 		~rpheap() {
 			clear();
-            global_cnt --;
-            if (global_cnt == 0) delete null;
+			global_cnt --;
+			if (global_cnt == 0) delete null;
 		}
 		const T & top() {
 			if (_size == 0) throw error();
@@ -140,16 +140,15 @@ namespace sjtu {
 		iterator push(const T &key){
 			node* now = new node(key,null,null,null);
 			roots.push_back(now);
-			if (Compare()(key,(*min_root)->key)){
-				min_root = roots.end();
-				-- min_root;
+			if (_size == 0 || Compare()(key,(*min_root)->key)){
+				min_root = -- roots.end();
 			}
 			++ _size;
 			return iterator(this,now);
 		}
 		void pop() {
 			if (_size == 0) throw error();
-			-- _size; 
+			-- _size;
 			node* cur_node = (*min_root) -> child[0];
 			while (cur_node != null) {
 				node *tmp = cur_node -> child[1];
@@ -199,8 +198,8 @@ namespace sjtu {
 			}
 		}
 	};
-    template<class T, class Compare>
-    int rpheap<T, Compare>::global_cnt = 0;
-    template<class T, class Compare>
-    typename rpheap<T, Compare>::node* rpheap<T, Compare>::null = nullptr;
+	template<class T, class Compare>
+	int rpheap<T, Compare>::global_cnt = 0;
+	template<class T, class Compare>
+	typename rpheap<T, Compare>::node* rpheap<T, Compare>::null = nullptr;
 };
