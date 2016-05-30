@@ -93,6 +93,7 @@ namespace sjtu {
 			for (auto it = roots.begin(); it != roots.end(); it ++) {
 				max_size = std::max(max_size, (*it) -> rank);
 			}
+			std::vector<node*> *count = new std::vector<node*> [max_size + 1];
 			for (auto it = roots.begin(); it != roots.end(); it ++) {
 				count[(*it) -> rank].push_back(*it);
 			}
