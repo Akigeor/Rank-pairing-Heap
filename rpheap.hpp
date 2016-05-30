@@ -133,6 +133,7 @@ namespace sjtu {
 		}
 		void pop() {
 			if (_size == 0) throw error();
+			-- _size; 
 			node* cur_node = (*min_root) -> child[0];
 			while (cur_node != null) {
 				node *tmp = cur_node -> child[1];
@@ -147,7 +148,7 @@ namespace sjtu {
 			for (auto it = roots.begin(); it != roots.end(); it ++) {
 				max_size = std::max(max_size, (*it) -> rank);
 			}
-			std::vector<node*> *count = new std::vector<node*> [max_size + 1];
+			std::vector<node*> *count = new std::vector<node*> [max_size + 2];
 			for (auto it = roots.begin(); it != roots.end(); it ++) {
 				count[(*it) -> rank].push_back(*it);
 			}
@@ -172,6 +173,12 @@ namespace sjtu {
 					for (auto x : count[i]) {
 						roots.push_back(x);
 					}
+				}
+			}
+			min_root = roots.end();
+			for (typename std::list<node*>::iterator i = roots.begin(); i != roots.end(); ++ i) {
+				if (min_root == roots.end() || Compare()((*i)->key, (*min_root)->key)) {
+					min_root = i;
 				}
 			}
 		}
